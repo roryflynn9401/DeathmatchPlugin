@@ -17,14 +17,13 @@ namespace DeathmatchPlugin;
 public class DeathmatchPlugin : BasePlugin
 {
     public override string ModuleName => "Deathmatch Plugin";
-    public override string ModuleVersion => "v1.0.2";
-    public override string ModuleAuthor => "Charlie Thomson <charlie@thmsn.dev>";
+    public override string ModuleVersion => "v1.0.3";
+    public override string ModuleAuthor => "Rory Flynn Fork -> Charlie Thomson>";
 
-    public override string ModuleDescription => "The Mercury Gaming (gg/mercurygaming) Deathmatch plugin";
+    public override string ModuleDescription => "CS2 Deathmatch plugin";
 
     private LoadoutManager _loadoutManager = new();
 
-    private HealthShotSubscriber _healthShotSubscriber = new();
     private KillstreakLogger _killstreakLogger = new();
     private MultiKillSubscriber _multiKillSubscriber = new();
 
@@ -39,14 +38,12 @@ public class DeathmatchPlugin : BasePlugin
     {
         DeathmatchConfig.LoadConfig(ModulePath);
 
-        _healthShotSubscriber.Init();
         _killstreakLogger.Init();
         _multiKillSubscriber.Init();
 
         _loadoutManager.Init();
 
         _killstreakManager.Init();
-        _killstreakManager.Subscribe("healthShotSubscriber", _healthShotSubscriber);
         _killstreakManager.Subscribe("killstreakLogger", _killstreakLogger);
         _killstreakManager.Subscribe("multiKillSubscriber", _multiKillSubscriber);
 
@@ -66,14 +63,12 @@ public class DeathmatchPlugin : BasePlugin
         UnregisterLoadoutChangeCommands();
 
         _loadoutManager.Cleanup();
-        _killstreakManager.Unsubscribe("healthShotSubscriber");
         _killstreakManager.Unsubscribe("killstreakLogger");
         _killstreakManager.Unsubscribe("multiKillSubscriber");
         _chatSpamTimer?.Kill();
         _loopbackLoadoutsTimer?.Kill();
         _multiKillSubscriber.Cleanup();
         _killstreakLogger.Cleanup();
-        _healthShotSubscriber.Cleanup();
     }
 
     public void CommandChangeLoadout(CCSPlayerController? player, CommandInfo command)
@@ -133,10 +128,13 @@ public class DeathmatchPlugin : BasePlugin
         }
 
         _killstreakManager.OnKill(attacker);
-
+        if (@event.Headshot)
+        {
+            FillPlayerHealth.Do(attacker);
+        }
         RefillPlayerAmmo.Do(attacker);
 
-        return HookResult.Continue;
+        return HookResult.Changed;
     }
 
     [GameEventHandler]

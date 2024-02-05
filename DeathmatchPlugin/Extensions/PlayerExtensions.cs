@@ -102,8 +102,9 @@ namespace DeathmatchPlugin.Extensions
         public static CBasePlayerWeapon? ActiveWeapon(this CCSPlayerController player)
         {
             if (!player.IsOnATeam()) return null;
-            var weaponServices = player.PlayerPawn.Value.WeaponServices;
-            return weaponServices?.ActiveWeapon.GetValueOrNull();
+            var weaponValue = player.PlayerPawn.Value.WeaponServices?.ActiveWeapon.Value;
+            if(weaponValue == null) return null;
+            return weaponValue;
         }
 
         public static string TeamColoredPlayerName(this CCSPlayerController player)
