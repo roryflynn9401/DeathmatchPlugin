@@ -11,6 +11,7 @@ using DeathmatchPlugin.Utilities;
 using CSSUtilities = CounterStrikeSharp.API.Utilities;
 using CSSTimer = CounterStrikeSharp.API.Modules.Timers.Timer;
 using CSSTimerFlags = CounterStrikeSharp.API.Modules.Timers.TimerFlags;
+using CounterStrikeSharp.API;
 
 namespace DeathmatchPlugin;
 
@@ -37,6 +38,17 @@ public class DeathmatchPlugin : BasePlugin
     public override void Load(bool hotReload)
     {
         DeathmatchConfig.LoadConfig(ModulePath);
+
+        Action execConfig = () => { Server.ExecuteCommand("exec server.cfg"); Server.ExecuteCommand("mp_warmup_end"); };
+        RegisterListener<Listeners.OnMapStart>(mapName => execConfig());
+        RegisterListener<Listeners.OnServerHibernationUpdate>(isHibernating => 
+        {
+            if (!isHibernating && CSSUtilities.GetPlayers().Where(x => !x.IsBot).Count() != 0)
+            {
+                execConfig();
+            }
+        });
+
 
         _killstreakLogger.Init();
         _multiKillSubscriber.Init();
@@ -128,11 +140,12 @@ public class DeathmatchPlugin : BasePlugin
         }
 
         _killstreakManager.OnKill(attacker);
+        
         if (@event.Headshot)
         {
             FillPlayerHealth.Do(attacker);
+            RefillPlayerAmmo.Do(attacker);
         }
-        RefillPlayerAmmo.Do(attacker);
 
         return HookResult.Changed;
     }
