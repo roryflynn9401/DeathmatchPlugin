@@ -1,7 +1,18 @@
 # Deathmatch Plugin
 
+## Changes/Features
+- Remove healthshots
+- Add auto-heal on headshot
+- Make auto-reload on headshot
+- Auto exec server cfg on hibernation change & map start
+
+### Coming Soon
+- Server leaderboard
+- Admin controls
+- Server info/management API (might release as seperate plugin, check my [profile](https://github.com/roryflynn9401) to see)
+
 ## Intended use
-This is built as a team deathmatch plugin, with player configurable loadouts, killstreaks, and a (mid) buy menu integration.
+This is built as a team deathmatch plugin, with player configurable loadouts, killstreaks, and a buy menu integration.
 
 ## Installation
 NOTE: I'd recommend updating `dllinclude\CounterStrikeSharp.dll` to the exact version running on your server for maximum compatibility, the included dll is `v27`.
