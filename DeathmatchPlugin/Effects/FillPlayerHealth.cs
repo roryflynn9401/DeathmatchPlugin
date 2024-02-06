@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory;
+using DeathmatchPlugin.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,25 +13,19 @@ namespace DeathmatchPlugin.Effects
     {
         public static void Do(CCSPlayerController player)
         {
-            Console.WriteLine("Filling player health");
-            if(player == null || !player.IsValid || !player.PlayerPawn.IsValid || player.IsBot || player.JustBecameSpectator)
+            if(!player.IsAlive() || player.IsBot)
                 return;
 
             var health = player.PlayerPawn.Value.Health;
-            if (health == 0)
-            {
-                return;
-            }
-            else if ((health + 50) > 100)
-            {
-                player.PlayerPawn.Value.Health = 100;
-                player.Health = 100;
-            }
-            else
-            {
-                player.PlayerPawn.Value.Health += 50;
-                player.Health += 50;
-            }
+            if (health == 0) return;
+
+            health = (health + 50) > 100 ?
+                     100 :
+                     health + 50;
+
+            player.PlayerPawn.Value.Health = health;
+            player.Health = health;
+            Console.WriteLine($"Filling health of player {player.PlayerName}");
         }
     }
 }

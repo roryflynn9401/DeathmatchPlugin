@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using DeathmatchPlugin.Extensions;
 using DeathmatchPlugin.Guns;
 using DeathmatchPlugin.Utilities;
 
@@ -48,13 +49,14 @@ public class LoadoutManager : LifeCycle
     public void OnChooseWeapon(CCSPlayerController player, Weapon weapon)
     {
         var loadout = GetLoadout(player);
-
         player.PrintToCenter(
             $"You have selected {weapon.DisplayName} as your {weapon.Slot} weapon\nThis will take effect on your next spawn");
 
         if (weapon.Slot.IsPrimary) loadout.PrimaryWeapon = weapon;
         else if (weapon.Slot.IsSecondary) loadout.SecondaryWeapon = weapon;
         else if (weapon.Slot.IsSpecial) loadout.SpecialWeapon = weapon;
+
+        if (player.IsAlive()) player.GiveNamedItem(weapon.Slug);
     }
 
     public void OnPurchaseWeapon(CCSPlayerController player)
